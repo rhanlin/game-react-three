@@ -3,6 +3,7 @@
 import { useGame } from './GameContext';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Modal from './Modal';
+import { soundManager } from './soundManager';
 
 const ENCOURAGEMENTS = [
   { text: '小心！一不小心就只能吃泡麵了！', emoji: '🍜' },
@@ -140,9 +141,11 @@ export default function GameUI() {
 
   useEffect(() => {
     if (gameState.gameOver) {
+      soundManager.play('mine')
       setMascotAnim('shake');
       setTimeout(() => setMascotAnim('idle'), 600);
     } else if (gameState.gameWon) {
+      soundManager.play('victory');
       setMascotAnim('happy');
       setTimeout(() => setMascotAnim('idle'), 1300);
     } else {

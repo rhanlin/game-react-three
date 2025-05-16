@@ -89,9 +89,6 @@ function Cell({ x, y, value, revealed, flagged }: {
     hoverRef.current = false;
     if (e.button === 0) {
       const opened = revealCell(x, y);
-      if (value === -1 && !revealed) {
-        setTimeout(() => soundManager.play('mine'), 100);
-      }
       if (opened >= 3) {
         soundManager.play('click2');
       } else {
@@ -99,6 +96,7 @@ function Cell({ x, y, value, revealed, flagged }: {
       }
     } else if (e.button === 2) {
       toggleFlag(x, y);
+      soundManager.play('flag');
     }
   };
 

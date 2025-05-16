@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
-import { soundManager } from './soundManager';
 
 interface GameState {
   board: number[][];
@@ -157,7 +156,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const totalMines = newBoard.flat().filter(cell => cell === -1).length;
       const revealedCells = newRevealed.flat().filter(cell => cell).length;
       if (revealedCells === totalCells - totalMines) {
-        soundManager.play('victory');
         return {
           ...prev,
           revealed: newRevealed,
@@ -176,7 +174,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const toggleFlag = useCallback((x: number, y: number) => {
     if (gameState.gameOver || gameState.gameWon || gameState.revealed[y][x]) return;
-    soundManager.play('flag');
 
     setGameState(prev => {
       const newFlagged = prev.flagged.map(row => [...row]);
