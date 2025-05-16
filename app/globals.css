@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -12,15 +12,147 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+input {
+  outline: none;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 13s ease infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.3;
+    transform: translateY(-20px) rotate(5deg);
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+  animation-delay: calc(var(--delay) * 1s);
+}
+
+@keyframes danmaku {
+  0% {
+    transform: translateX(100vw) translateY(var(--y)) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(-100vw) translateY(var(--y)) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+.animate-danmaku {
+  animation: danmaku 15s linear infinite;
+  animation-delay: calc(var(--delay) * 1s);
+}
+
+@keyframes bgfood {
+  0% {
+    opacity: calc(var(--max-opacity, 1) * 0.1);
+    transform: translateY(0) scale(var(--init-scale, 1)) rotate(var(--init-rotate, 0deg));
+  }
+  10% {
+    opacity: calc(var(--max-opacity, 1) * 0.3);
+  }
+  50% {
+    opacity: calc(var(--max-opacity, 1) * 0.6);
+    transform: translateY(-20px) scale(calc(var(--init-scale, 1) * 1.05)) rotate(calc(var(--init-rotate, 0deg) + 2deg));
+  }
+  90% {
+    opacity: calc(var(--max-opacity, 1) * 0.9);
+  }
+  100% {
+    opacity: calc(var(--max-opacity, 1) * 1.1);
+    transform: translateY(0) scale(var(--init-scale, 1)) rotate(var(--init-rotate, 0deg));
+  }
+}
+
+.animate-bgfood {
+  animation: bgfood var(--duration, 18s) ease-in-out infinite;
+}
+
+@keyframes mascot-bounce {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.04) translateY(-8px); }
+}
+.mascot-bounce {
+  animation: mascot-bounce 1.6s infinite cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes mascot-shake {
+  0%, 100% { transform: scale(1.08) rotate(0deg); }
+  20% { transform: scale(1.08) rotate(-8deg); }
+  40% { transform: scale(1.08) rotate(8deg); }
+  60% { transform: scale(1.08) rotate(-8deg); }
+  80% { transform: scale(1.08) rotate(8deg); }
+}
+.mascot-shake {
+  animation: mascot-shake 0.5s;
+}
+
+@keyframes mascot-happy {
+  0%, 100% { transform: scale(1.18) rotate(0deg); }
+  20% { transform: scale(1.22) rotate(-8deg); }
+  40% { transform: scale(1.22) rotate(8deg); }
+  60% { transform: scale(1.22) rotate(-8deg); }
+  80% { transform: scale(1.22) rotate(8deg); }
+}
+.mascot-happy {
+  animation: mascot-happy 1.2s;
 }

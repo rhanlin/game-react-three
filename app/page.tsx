@@ -1,103 +1,90 @@
-import Image from "next/image";
+'use client';
+
+import { Canvas, useThree } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import { Suspense, useEffect, useMemo } from 'react';
+import GameBoard from './components/GameBoard';
+import GameUI from './components/GameUI';
+import { GameProvider, useGame } from './components/GameContext';
+import { EffectComposer, Noise, Vignette, Bloom } from '@react-three/postprocessing';
+
+function CameraController() {
+  const { camera } = useThree();
+  const { gameState } = useGame();
+  const boardSize = useMemo(() => gameState.board.length || 8, [gameState.board.length]);
+
+  useEffect(() => {
+    const distance = boardSize * 1.2;
+    const height = distance * 1.2;
+
+    camera.position.set(0, height, distance);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [boardSize, camera]);
+
+  return null;
+}
+
+function Scene() {
+  return (
+    <Canvas 
+      camera={{ position: [0, 0, 0], fov: 50 }}
+      raycaster={{
+        params: {
+          Line: { threshold: 0.1 },
+          Points: { threshold: 0.1 },
+          Mesh: { threshold: 0.1 },
+          LOD: {},
+          Sprite: {}
+        }
+      }}
+    >
+      <Suspense fallback={null}>
+        <ambientLight intensity={0.8} />
+        <GameBoard />
+        <CameraController />
+        <OrbitControls 
+          enablePan={false}
+          minPolarAngle={Math.PI / 6}
+          maxPolarAngle={Math.PI / 3}
+          target={[0, 0, 0]}
+        />
+        <EffectComposer>
+        <Bloom 
+            intensity={0.5} 
+            luminanceThreshold={0.1}
+            luminanceSmoothing={0.8}
+          />
+          <Noise opacity={0.08} />
+          <Vignette darkness={0.2} />
+        </EffectComposer>
+      </Suspense>
+    </Canvas>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <GameProvider>
+      <main className="min-h-screen relative overflow-hidden">
+        {/* 質感奶油紙背景 */}
+        <div className="fixed inset-0 bg-gradient-to-br from-[#f0e4d1] via-[#fdf6e3] to-[#fcf8eb] animate-gradient">
+          <div className="absolute inset-0 bg-[url('https://create.viverse.com/assets/standalone/scenes/xnwnzveczw/1747300641/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/20"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 opacity-50 mix-blend-multiply" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '100px 100px'
+          }}></div>
+        </div>
+        
+        {/* 遊戲內容 */}
+        <div className="relative z-10 h-screen">
+          <Scene />
+          <GameUI />
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </GameProvider>
   );
 }
